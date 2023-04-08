@@ -22,5 +22,10 @@ pub enum Tokens {
     IDENTIFIER,
     INTEGERS,
     FLOATS,
+    SEMICOLON,
+    LBRACKET,
+    RBRACKET,
+    EQUALITY,
+    INEQUALITY,
     UNKNOWN
 }

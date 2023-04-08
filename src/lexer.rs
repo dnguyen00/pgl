@@ -30,6 +30,11 @@ impl Lexer<'_> {
         tokens.insert(Tokens::GREATEQ, ">=");
         tokens.insert(Tokens::AND, "&&");
         tokens.insert(Tokens::OR, "||");
+        tokens.insert(Tokens::SEMICOLON, ";");
+        tokens.insert(Tokens::LBRACKET, "{");
+        tokens.insert(Tokens::RBRACKET, "}");
+        tokens.insert(Tokens::EQUALITY, "==");
+        tokens.insert(Tokens::INEQUALITY, "!=");
 
         return Lexer { to_lex: to_lex, position: 0, tokens_chars: tokens}
     }
@@ -72,7 +77,8 @@ impl Lexer<'_> {
 
                 let special_tokens = [[Tokens::GREAT, Tokens::GREATEQ], 
                 [Tokens::LESS, Tokens::LESSEQ], [Tokens::ADD, Tokens::ADDASSIGNMENT], [Tokens::SUB, Tokens::SUBASSIGNMENT],
-                [Tokens::MUL, Tokens::MULASSIGNMENT], [Tokens::DIV, Tokens::DIVASSIGNMENT], [Tokens::MOD, Tokens::MODASSIGNMENT]];
+                [Tokens::MUL, Tokens::MULASSIGNMENT], [Tokens::DIV, Tokens::DIVASSIGNMENT], [Tokens::MOD, Tokens::MODASSIGNMENT],
+                [Tokens::EQUALS, Tokens::EQUALITY]];
                 
                 for pairs in special_tokens {
                     if pairs.get(0).unwrap() == k {
@@ -92,7 +98,7 @@ impl Lexer<'_> {
                 return Some(Lexemes { token: *k, lexeme: lexeme, position: [starting_position, self.position as u32 - 1] })
             }
             
-            let literal_tokens = [Tokens::AND, Tokens::OR];
+            let literal_tokens = [Tokens::AND, Tokens::OR, Tokens::INEQUALITY];
             for l_tokens in literal_tokens {
                 if lexeme.chars().nth(0) == self.tokens_chars.get(&l_tokens).unwrap().chars().nth(0) {
                     if self.peek_next_char() == self.tokens_chars.get(&l_tokens).unwrap().chars().nth(1) {
