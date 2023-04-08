@@ -47,7 +47,7 @@ impl Lexer<'_> {
         return self.to_lex.chars().nth(self.position as usize);
     }
 
-    fn next_token(&mut self) -> Option<Lexemes> {
+    pub fn next_token(&mut self) -> Option<Lexemes> {
         let mut lexeme: String = String::new();
         let mut current_char = self.get_current_char();
         let starting_position: u32 = self.position as u32;
@@ -140,8 +140,14 @@ impl Lexer<'_> {
         return current_token;
     }
 
-    fn peek_token(&mut self) -> Option<Lexemes> {
-        todo!();
+    pub fn peek_token(&mut self) -> Option<Lexemes> {
+        let next_token = self.next_token();
+        if next_token == None {
+            return None;
+        }
+
+        self.position -= *next_token.clone().unwrap().position.get(0).unwrap() as i64 - *next_token.clone().unwrap().position.get(0).unwrap() as i64 + 1;
+        return next_token;
     }
 
     pub fn parse(&mut self) {
