@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::tokens::Tokens;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Lexer<'a> {
     to_lex: &'a str,
     position: i64,
@@ -152,7 +152,7 @@ impl Lexer<'_> {
             return None;
         }
 
-        self.position -= *next_token.clone().unwrap().position.get(0).unwrap() as i64 - *next_token.clone().unwrap().position.get(0).unwrap() as i64 + 1;
+        self.position -= *next_token.clone().unwrap().position.get(1).unwrap() as i64 - *next_token.clone().unwrap().position.get(0).unwrap() as i64 + 1;
         return next_token;
     }
 
@@ -168,7 +168,7 @@ impl Lexer<'_> {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Lexemes {
-    token: Tokens,
-    lexeme: String,
-    position: [u32;2]
+    pub token: Tokens,
+    pub lexeme: String,
+    pub position: [u32;2]
 }
