@@ -61,7 +61,7 @@ impl Lexer<'_> {
             return None;
         }
 
-        while current_char == Some(' ') {
+        while current_char == Some(' ') || current_char == Some('\n') {
             if self.peek_next_char().is_some() {
                 current_char = self.get_next_char();
             }

@@ -10,14 +10,28 @@ impl Syntax<'_> {
         return Syntax { lexer: lexer };
     }
 
-    pub fn check_validity(&mut self) -> Option<bool> {
+    pub fn check_validity(&mut self) -> bool {
         if self.lexer.peek_token() == None {
-            return None;
+            return false;
         }
 
-        println!("{:?}", self.parse_stmt());
+        let mut statements: Vec<Option<Grammar>> = Vec::new();
 
-        return None;
+        loop {
+            if self.lexer.peek_token() == None {
+                break;
+            }
+
+            statements.push(self.parse_stmt());
+            
+            if statements.last().unwrap() != &Some(Grammar::STMT) {
+                return false;
+            }
+
+            println!("{:?}", statements.last().unwrap());
+        }
+
+        return true;
     }
 
     fn parse_stmt_list(&mut self) -> Option<Grammar> {
@@ -25,21 +39,20 @@ impl Syntax<'_> {
             return Some(Grammar::STMTLIST);
         }
 
-        loop {
-            if self.parse_stmt() != Some(Grammar::STMT) {
-                return Some(Grammar::STMTLIST); //THIS MIGHT BE A SPECIAL CASE, I HAVE NO CLUE
-            }
+        let mut original_lexer = self.lexer.clone();
 
-            let peek_token = self.lexer.peek_token().clone().unwrap();
-            let match_terminal_token = [Tokens::SEMICOLON];
+        loop {
             let mut is_set = false;
-            for token in match_terminal_token {
-                if peek_token.token == token {
-                    self.lexer.next_token();
-                    is_set = true;
-                    break;
+            if self.parse_stmt() == Some(Grammar::STMT) {
+                if self.lexer.peek_token().is_some() {
+                    if self.lexer.next_token().unwrap().token == Tokens::SEMICOLON {
+                        original_lexer = self.lexer.clone();
+                        is_set = true;
+                    } else {
+                        return Some(Grammar::UNKNOWN);
+                    }
                 }
-            }
+            } else { self.lexer = original_lexer.clone(); }
 
             if !is_set {
                 break;
@@ -53,19 +66,19 @@ impl Syntax<'_> {
         let original_lexer = self.lexer.clone();
 
         if self.parse_if_stmt() == Some(Grammar::IFSTATEMENT) {
-            return Some(Grammar::IFSTATEMENT);
+            return Some(Grammar::STMT);
         }
 
         self.lexer = original_lexer.clone();
 
         if self.parse_block() == Some(Grammar::BLOCK) {
-            return Some(Grammar::BLOCK);
+            return Some(Grammar::STMT);
         }
 
         self.lexer = original_lexer.clone();
 
         if self.parse_expr() == Some(Grammar::EXPRESSION) {
-            return Some(Grammar::EXPRESSION);
+            return Some(Grammar::STMT);
         }
 
         return Some(Grammar::UNKNOWN);
@@ -252,7 +265,7 @@ impl Syntax<'_> {
 
         loop {
             let peek_token = self.lexer.peek_token().clone().unwrap();
-            let match_terminal_token = [Tokens::AND];
+            let match_terminal_token = [Tokens::OR];
             let mut is_set = false;
             for token in match_terminal_token {
                 if peek_token.token == token {
@@ -285,7 +298,13 @@ impl Syntax<'_> {
         }
 
         loop {
+            let peek_token = self.lexer.peek_token().clone();
+            if peek_token == None {
+                break;
+            }
+
             let peek_token = self.lexer.peek_token().clone().unwrap();
+            
             let match_terminal_token = [Tokens::ADD, Tokens::SUB];
             let mut is_set = false;
             for token in match_terminal_token {
