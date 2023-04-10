@@ -18,12 +18,12 @@ fn main() {
     ){hello
         +world
         ;
-    }{1230+
+    }else{bye+world;}{1230+
         1231;
         5+23213;hello+
-        world;}";
-    //let str = "{1230+1231;5+23213;hello+world;}";
-    //let str = "hello + world * 1249129.521512";
+        world;}while(true){bye+world;}";
+    // let str = "{1230+1231;5+23213;hello+world;}";
+    // let str = "hello + world * 1249129.521512";
     let lexer = Lexer::new(str);
     lexer.clone().parse();
 
