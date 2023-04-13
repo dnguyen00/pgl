@@ -1,32 +1,26 @@
+use std::fs;
+
 use lexer::Lexer;
 use syntax::Syntax;
 
 mod lexer;
 mod tokens;
 mod syntax;
+mod tests;
 
 fn main() {
-    let str = "if(x 
-        > 20 || y <= 40 && v >= z
-    ) 
-    { hello 
-        + 
-        world; 
+    let file = fs::read_to_string("lexer.txt");
+    if file.is_err() {
+        panic!("{:?}", file.err());
     }
-     if(
-        x>20
-    ){hello
-        +world
-        ;
-    }else{bye+world;}{1230+
-        1231;
-        5+23213;hello+
-        world;}while(true){bye+world;}";
-    // let str = "{1230+1231;5+23213;hello+world;}";
-    // let str = "hello + world * 1249129.521512";
-    let lexer = Lexer::new(str);
+
+    let mut file_contents = file.ok().unwrap().as_str().to_owned();
+
+    file_contents = "{if(a>b){hello+world;};}".to_owned();
+
+    let lexer = Lexer::new(&file_contents);
     lexer.clone().parse();
 
     let mut syntax = Syntax::new(lexer);
-    println!("{:?}", syntax.check_validity());
+    println!("lexer.txt syntax analyzer result: {:?}", syntax.check_validity());
 }
