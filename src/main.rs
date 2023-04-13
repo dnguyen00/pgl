@@ -14,9 +14,7 @@ fn main() {
         panic!("{:?}", file.err());
     }
 
-    let mut file_contents = file.ok().unwrap().as_str().to_owned();
-
-    file_contents = "{if(a>b){hello+world;};}".to_owned();
+    let file_contents = file.ok().unwrap().as_str().to_owned();
 
     let lexer = Lexer::new(&file_contents);
     lexer.clone().parse();
